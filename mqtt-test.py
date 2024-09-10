@@ -36,7 +36,7 @@ def update_display_string():
     display_pixels[round(wall_temp)] = "+"
     print("".join(display_pixels))
 
-def on_connect(client, userdata, flags, reason_code, properties):
+def on_connect(client, userdata, flags, reason_code):
     print('Connected with result code ' + str(reason_code))
 
     client.subscribe(ini['mqtt']['topic'])
@@ -45,8 +45,7 @@ def on_message(client, userdata, msg):
 
     global air_temp, wall_temp, air_humidity
     sensor = msg.topic.split("/")[-1]
-    match sensor:
-        case "airtemp":
+    if sensor == "airtemp":
             new_air_temp = float(msg.payload)
             if air_temp != new_air_temp:
                 print("Air Temperature changed!")
@@ -54,10 +53,10 @@ def on_message(client, userdata, msg):
                 calculate_dew_point()
                 update_display_string()
             print(f"Air Temperature: {air_temp:.1f} C")
-        case "walltemp":
+    elif sensor == "walltemp":
             wall_temp = float(msg.payload)
             print(f"Wall Temperature: {wall_temp:.1f} C")
-        case "humidity":
+    elif sensor == "humidity":
             new_air_humidity = float(msg.payload)
             if air_humidity != new_air_humidity:
                 print("Air Humidity changed!")
@@ -66,7 +65,7 @@ def on_message(client, userdata, msg):
                 update_display_string()
             print(f"Air Humidity: {air_humidity:.1f} %")
     
-client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
