@@ -1,0 +1,12 @@
+#~/.config/systemd/user/humidipi.service
+[Unit]
+Description=HumidiPi
+After=network.target
+
+[Service]
+ExecStart=/bin/bash humidipi.sh
+WorkingDirectory=%h/scripsi/humidipi
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
