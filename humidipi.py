@@ -1,6 +1,6 @@
 import paho.mqtt.client as mqtt
 from configparser import ConfigParser
-import time
+import signal
 import math
 from pathlib import Path
 import ledshim
@@ -16,6 +16,12 @@ air_humidity = 50.0
 
 ledshim.set_clear_on_exit()
 ledshim.set_brightness(0.7)
+ledshim.set_all(255,255,0,0.5)
+ledshim.show()
+
+def term_handler():
+    ledshim.clear()
+    ledshim.show()
 
 def calculate_dew_point():
     global air_temp, air_humidity, dew_temp
@@ -39,8 +45,10 @@ def update_display():
 
 def on_connect(client, userdata, flags, reason_code):
     print('Connected with result code ' + str(reason_code))
-
-    client.subscribe(ini['mqtt']['topic'])
+    if reason_code == 0:
+        ledshim.set_all(255,0,255,0.5)
+        ledshim.show()
+        client.subscribe(ini['mqtt']['topic'])
 
 def on_message(client, userdata, msg):
 
@@ -65,7 +73,9 @@ def on_message(client, userdata, msg):
                 calculate_dew_point()
                 update_display()
             print(f"Air Humidity: {air_humidity:.1f} %")
-    
+
+signal.signal(signal.SIGTERM,term_handler)
+
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
