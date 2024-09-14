@@ -15,8 +15,8 @@ dew_temp = 20.0
 air_humidity = 50.0
 
 ledshim.set_clear_on_exit()
-ledshim.set_brightness(0.7)
-ledshim.set_all(255,255,0,0.5)
+ledshim.set_brightness(0.3)
+ledshim.set_all(255,255,0,0.4)
 ledshim.show()
 
 def term_handler():
@@ -46,7 +46,7 @@ def update_display():
 def on_connect(client, userdata, flags, reason_code):
     print('Connected with result code ' + str(reason_code))
     if reason_code == 0:
-        ledshim.set_all(255,0,255,0.5)
+        ledshim.set_all(255,0,255,0.4)
         ledshim.show()
         client.subscribe(ini['mqtt']['topic'])
 
